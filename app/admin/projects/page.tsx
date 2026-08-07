@@ -5,6 +5,7 @@ import { getClients } from "@/lib/api/clients";
 import { NavBreadcrumbs } from "@/components/ui/nav-breadcrumbs";
 import { Badge } from "@/components/ui/badge";
 import { statusLabel, statusVariant } from "@/lib/status";
+import { formatDate } from "@/lib/format";
 import {
   Table,
   TableHead,
@@ -57,7 +58,7 @@ export default async function AdminProjectsPage() {
                 </Badge>
               </TableCell>
               <TableCell className="text-foreground-dim">
-                {project.updatedAt}
+                {formatDate(project.updatedAt)}
               </TableCell>
             </TableRow>
           ))}

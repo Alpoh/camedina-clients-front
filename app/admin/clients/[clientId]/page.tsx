@@ -7,6 +7,7 @@ import { NavBreadcrumbs } from "@/components/ui/nav-breadcrumbs";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { statusLabel, statusVariant } from "@/lib/status";
+import { formatDate } from "@/lib/format";
 
 export default async function AdminClientDetailPage({
   params,
@@ -34,7 +35,7 @@ export default async function AdminClientDetailPage({
         {client.name}
       </h1>
       <p className="mt-1 text-sm text-foreground-dim">
-        {client.contactEmail} · client since {client.createdAt}
+        {client.email} · client since {formatDate(client.createdAt)}
       </p>
 
       <p className="mt-8 text-xs uppercase tracking-wide text-foreground-dim">
@@ -51,7 +52,7 @@ export default async function AdminClientDetailPage({
                 </Badge>
               </div>
               <p className="mt-2 text-xs text-foreground-dim">
-                updated {project.updatedAt}
+                updated {formatDate(project.updatedAt)}
               </p>
             </Card>
           </Link>

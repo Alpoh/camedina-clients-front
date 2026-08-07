@@ -50,7 +50,14 @@ export async function signup(
     return { errors: validatedFields.error.flatten().fieldErrors };
   }
 
-  const user = await registerClient(validatedFields.data);
+  let user;
+  try {
+    user = await registerClient(validatedFields.data);
+  } catch {
+    return {
+      message: "Something went wrong creating your account. Please try again.",
+    };
+  }
 
   if (!user) {
     return { message: "An account with this email already exists." };

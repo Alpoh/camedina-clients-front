@@ -5,6 +5,7 @@ import { getClientById } from "@/lib/api/clients";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { statusLabel, statusVariant } from "@/lib/status";
+import { formatDate } from "@/lib/format";
 
 export default async function PortalHome() {
   const user = await getUser();
@@ -43,7 +44,7 @@ export default async function PortalHome() {
                 </Badge>
               </div>
               <p className="mt-2 text-xs text-foreground-dim">
-                updated {project.updatedAt}
+                updated {formatDate(project.updatedAt)}
               </p>
             </Card>
           </Link>

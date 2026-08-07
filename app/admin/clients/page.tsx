@@ -3,6 +3,7 @@ import { getUser } from "@/lib/dal";
 import { getClients } from "@/lib/api/clients";
 import { getProjects } from "@/lib/api/projects";
 import { NavBreadcrumbs } from "@/components/ui/nav-breadcrumbs";
+import { formatDate } from "@/lib/format";
 import {
   Table,
   TableHead,
@@ -49,11 +50,11 @@ export default async function AdminClientsPage() {
                   </Link>
                 </TableCell>
                 <TableCell className="text-foreground-dim">
-                  {client.contactEmail}
+                  {client.email}
                 </TableCell>
                 <TableCell align="right">{count}</TableCell>
                 <TableCell className="text-foreground-dim">
-                  {client.createdAt}
+                  {formatDate(client.createdAt)}
                 </TableCell>
               </TableRow>
             );

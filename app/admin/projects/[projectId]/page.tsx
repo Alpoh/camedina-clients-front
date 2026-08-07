@@ -5,6 +5,7 @@ import { getClientById } from "@/lib/api/clients";
 import { NavBreadcrumbs } from "@/components/ui/nav-breadcrumbs";
 import { Badge } from "@/components/ui/badge";
 import { statusLabel, statusVariant } from "@/lib/status";
+import { formatDate } from "@/lib/format";
 
 export default async function AdminProjectDetailPage({
   params,
@@ -40,7 +41,7 @@ export default async function AdminProjectDetailPage({
 
       <p className="mt-1 text-sm text-foreground-dim">
         {client ? `${client.name} · ` : ""}
-        updated {project.updatedAt}
+        updated {formatDate(project.updatedAt)}
       </p>
 
       {project.description && (

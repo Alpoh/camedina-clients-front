@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import { getUser } from "@/lib/dal";
-import { getProjectById } from "@/lib/api/projects";
+import { getProjectByClientAndId } from "@/lib/api/projects";
 import { NavBreadcrumbs } from "@/components/ui/nav-breadcrumbs";
 import { Badge } from "@/components/ui/badge";
 import { statusLabel, statusVariant } from "@/lib/status";
+import { formatDate } from "@/lib/format";
 
 export default async function PortalProjectDetailPage({
   params,
@@ -12,12 +13,14 @@ export default async function PortalProjectDetailPage({
 }) {
   const user = await getUser();
   const { projectId } = await params;
-  const project = await getProjectById(projectId);
 
-  // Ownership check happens here, not just via the URL — a project that
-  // exists but belongs to another client must 404 the same as one that
-  // doesn't exist at all.
-  if (!project || project.clientId !== user.clientId) notFound();
+  // Fetching scoped to the session's own clientId is the ownership check —
+  // the backend itself 404s a project id that belongs to a different
+  // client, the same as one that doesn't exist at all.
+  if (!user.clientId) notFound();
+  const project = await getProjectByClientAndId(user.clientId, projectId);
+
+  if (!project) notFound();
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -35,7 +38,7 @@ export default async function PortalProjectDetailPage({
       </div>
 
       <p className="mt-1 text-sm text-foreground-dim">
-        updated {project.updatedAt}
+        updated {formatDate(project.updatedAt)}
       </p>
 
       {project.description && (
