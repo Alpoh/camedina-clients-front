@@ -22,7 +22,7 @@ export async function proxy(request: NextRequest) {
 
   const isAdminRoute = pathname.startsWith("/admin");
   const isPortalRoute = pathname.startsWith("/portal");
-  const isLoginRoute = pathname === "/login";
+  const isPublicAuthRoute = pathname === "/login" || pathname === "/signup";
 
   const cookie = request.cookies.get(SESSION_COOKIE)?.value;
   const session = await decrypt(cookie);
@@ -31,7 +31,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (isLoginRoute && session) {
+  if (isPublicAuthRoute && session) {
     return NextResponse.redirect(new URL(homeForRole(session.role), request.url));
   }
 

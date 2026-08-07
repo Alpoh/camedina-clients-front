@@ -2,20 +2,43 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
-import { login } from "@/app/actions/auth";
+import { signup } from "@/app/actions/auth";
 import { TerminalWindow } from "@/components/ui/terminal-window";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Prompt } from "@/components/ui/prompt";
 
-export default function LoginPage() {
-  const [state, action, pending] = useActionState(login, undefined);
+export default function SignupPage() {
+  const [state, action, pending] = useActionState(signup, undefined);
 
   return (
-    <TerminalWindow title="agency@web:~/login" className="w-full max-w-sm">
+    <TerminalWindow title="agency@web:~/signup" className="w-full max-w-sm">
       <form action={action} className="flex flex-col gap-4">
-        <Prompt className="text-foreground-dim">authenticate</Prompt>
+        <Prompt className="text-foreground-dim">create account</Prompt>
+
+        <div>
+          <Label htmlFor="name">Your name</Label>
+          <Input id="name" name="name" autoComplete="name" required />
+          {state?.errors?.name && (
+            <p className="mt-1 text-xs text-error">{state.errors.name[0]}</p>
+          )}
+        </div>
+
+        <div>
+          <Label htmlFor="company">Business name</Label>
+          <Input
+            id="company"
+            name="company"
+            autoComplete="organization"
+            required
+          />
+          {state?.errors?.company && (
+            <p className="mt-1 text-xs text-error">
+              {state.errors.company[0]}
+            </p>
+          )}
+        </div>
 
         <div>
           <Label htmlFor="email">Email</Label>
@@ -37,7 +60,7 @@ export default function LoginPage() {
             id="password"
             name="password"
             type="password"
-            autoComplete="current-password"
+            autoComplete="new-password"
             required
           />
           {state?.errors?.password && (
@@ -47,16 +70,18 @@ export default function LoginPage() {
           )}
         </div>
 
-        {state?.message && <p className="text-xs text-error">{state.message}</p>}
+        {state?.message && (
+          <p className="text-xs text-error">{state.message}</p>
+        )}
 
         <Button type="submit" disabled={pending} className="w-full">
-          {pending ? "signing in..." : "sign in"}
+          {pending ? "creating account..." : "create account"}
         </Button>
 
         <p className="text-center text-xs text-foreground-dim">
-          New client?{" "}
-          <Link href="/signup" className="text-accent hover:underline">
-            create an account
+          Already have an account?{" "}
+          <Link href="/login" className="text-accent hover:underline">
+            sign in
           </Link>
         </p>
       </form>

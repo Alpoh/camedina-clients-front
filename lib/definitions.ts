@@ -14,3 +14,24 @@ export type LoginFormState =
       message?: string;
     }
   | undefined;
+
+export const SignupFormSchema = z.object({
+  name: z.string().min(2, { error: "Enter your name." }).trim(),
+  company: z.string().min(2, { error: "Enter your business name." }).trim(),
+  email: z.email({ error: "Enter a valid email." }).trim(),
+  password: z
+    .string()
+    .min(8, { error: "Password must be at least 8 characters." }),
+});
+
+export type SignupFormState =
+  | {
+      errors?: {
+        name?: string[];
+        company?: string[];
+        email?: string[];
+        password?: string[];
+      };
+      message?: string;
+    }
+  | undefined;
