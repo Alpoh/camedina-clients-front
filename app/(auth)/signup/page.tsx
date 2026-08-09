@@ -13,7 +13,7 @@ export default function SignupPage() {
   const [state, action, pending] = useActionState(signup, undefined);
 
   return (
-    <TerminalWindow title="agency@web:~/signup" className="w-full max-w-sm">
+    <TerminalWindow title="camedina@web:~/signup" className="w-full max-w-sm">
       <form action={action} className="flex flex-col gap-4">
         <Prompt className="text-foreground-dim">create account</Prompt>
 

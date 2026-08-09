@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "agency@web",
+  title: "camedina@web",
   description: "Web design, SEO, and digital strategy for growing businesses.",
 };
 

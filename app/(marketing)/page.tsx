@@ -6,7 +6,7 @@ import { SocialProof } from "@/components/marketing/social-proof";
 import { Cta } from "@/components/marketing/cta";
 
 export const metadata: Metadata = {
-  title: "agency@web — web design, SEO & digital strategy",
+  title: "camedina@web — web design, SEO & digital strategy",
   description:
     "We build the web presence your business deserves: websites, SEO, and digital strategy that convert visitors into clients.",
 };

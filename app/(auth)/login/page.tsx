@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [state, action, pending] = useActionState(login, undefined);
 
   return (
-    <TerminalWindow title="agency@web:~/login" className="w-full max-w-sm">
+    <TerminalWindow title="camedina@web:~/login" className="w-full max-w-sm">
       <form action={action} className="flex flex-col gap-4">
         <Prompt className="text-foreground-dim">authenticate</Prompt>
 

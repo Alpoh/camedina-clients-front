@@ -7,13 +7,13 @@ export const users: User[] = [
   {
     id: "user-admin-1",
     name: "Dana Reyes",
-    email: "dana@agency.test",
+    email: "dana@camedina.com",
     role: "admin",
   },
   {
     id: "user-admin-2",
     name: "Sam Ito",
-    email: "sam@agency.test",
+    email: "sam@camedina.com",
     role: "admin",
   },
   {
@@ -40,8 +40,8 @@ export const users: User[] = [
 ];
 
 export const mockPasswords: Record<string, string> = {
-  "dana@agency.test": "demo1234",
-  "sam@agency.test": "demo1234",
+  "dana@camedina.com": "demo1234",
+  "sam@camedina.com": "demo1234",
   "jordan@acme.test": "demo1234",
   "priya@borealis.test": "demo1234",
   "marcus@fernwood.test": "demo1234",

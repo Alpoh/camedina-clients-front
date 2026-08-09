@@ -8,7 +8,7 @@ export function Hero() {
   return (
     <section className="px-6 py-20 sm:py-28">
       <div className="mx-auto max-w-3xl">
-        <TerminalWindow title="agency@web:~$" bodyClassName="p-6 sm:p-8">
+        <TerminalWindow title="camedina@web:~$" bodyClassName="p-6 sm:p-8">
           <p className="font-mono text-sm text-foreground-dim">
             <Prompt glyph="$">./improve-web-presence.sh --client=you</Prompt>
           </p>

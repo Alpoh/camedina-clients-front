@@ -12,7 +12,7 @@ export function MarketingNav() {
     <header className="border-b border-border px-6 py-4">
       <nav className="mx-auto flex max-w-5xl items-center justify-between">
         <Link href="/" className="text-sm text-foreground">
-          agency<span className="text-accent">@</span>web
+          camedina<span className="text-accent">@</span>web
           <span className="text-foreground-dim">:~$</span>
         </Link>
         <div className="hidden items-center gap-6 sm:flex">

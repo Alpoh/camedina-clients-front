@@ -7,7 +7,7 @@ export function Cta() {
   return (
     <section id="contact" className="px-6 py-16">
       <div className="mx-auto max-w-3xl">
-        <TerminalWindow title="agency@web:~$" className="text-center">
+        <TerminalWindow title="camedina@web:~$" className="text-center">
           <p className="font-mono text-sm text-foreground-dim">
             <Prompt glyph="$" className="justify-center">
               ready --to-improve-web-presence
@@ -22,7 +22,7 @@ export function Cta() {
           </p>
           <div className="mt-6 flex justify-center">
             <Link
-              href="mailto:hello@agency.test"
+              href="mailto:hello@camedina.com"
               className={buttonVariants({ variant: "primary" })}
             >
               Get in touch

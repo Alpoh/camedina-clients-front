@@ -1,5 +1,10 @@
 # Projects — proposed API extension
 
+> **Status: shipped.** The backend implemented this proposal essentially as written (commit
+> `4179339` "add projects feature" in `clients-service`). See its `docs/API.md` for the live
+> contract and `docs/PLAN.md` for implementation notes. Kept below for historical context; answers
+> to the open questions are inline at the bottom.
+
 The backend currently models `Client` plus its `Phone` and `Address` sub-resources (see the
 main API doc). This proposes how a `Project` resource could extend that, following the same
 conventions (base path, RFC 7807 errors, `Pageable`, opaque IDs).
@@ -55,10 +60,16 @@ Same 404 rule as phones/addresses: a project id belonging to a *different* clien
 returns 404, not 403 — that's the same principle already built into the mocked portal's
 ownership check (a client hitting another client's project 404s, not leaks).
 
-## Open questions
+## Open questions — resolved
 
-1. Fixed status enum, or does the agency need custom stages later?
-2. Does a project ever need more than one client, or assignable staff — or is it strictly
-   single-client, single-owner for now?
-3. Is this something that's about to be added to the Spring Boot backend, or is it further out —
-   should the frontend keep Projects fully mocked in the meantime regardless?
+1. **Fixed status enum, or custom stages?** Fixed enum — shipped as `ProjectStatus`
+   (`PLANNING`/`IN_PROGRESS`/`BLOCKED`/`REVIEW`/`DONE`), matching the frontend's existing mocks.
+2. **Multi-client or assignable staff, or single-client/single-owner?** Strictly single-client, no
+   assignable staff — there's no `User`/auth concept in the backend yet. Worth revisiting once one
+   exists (tracked in `clients-service`'s `docs/PLAN.md` "suggested next steps").
+3. **Timeline?** Already added to the Spring Boot backend; the frontend's mock data was removed and
+   `lib/api/projects.ts` calls the real endpoints.
+
+One gap from the original proposal is still open on both sides: there's no global "list all
+projects across clients" endpoint, so this frontend's `getProjects()` fans out per-client
+client-side as a workaround. Fine at current scale; revisit if that becomes a real bottleneck.
