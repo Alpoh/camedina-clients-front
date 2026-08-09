@@ -20,6 +20,38 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+### Environment variables
+
+Copy `.env.local.example` to `.env.local` and fill it in — `SESSION_SECRET` (falls back to an
+insecure dev-only default if unset) and `BACKEND_API_URL` (defaults to `http://localhost:8080`,
+the [`clients-service`](../clients-service) Spring Boot backend).
+
+## Docker
+
+Build and run the production image directly:
+
+```bash
+docker build -t clients-front .
+docker run --rm -p 3000:3000 \
+  -e SESSION_SECRET=<your-secret> \
+  -e BACKEND_API_URL=http://host.docker.internal:8080 \
+  clients-front
+```
+
+Or via Compose, which reads a plain `.env` file (distinct from `.env.local`/`.env.local.example`,
+which only `next dev` reads):
+
+```bash
+cp .env.example .env   # fill in SESSION_SECRET
+docker compose up --build
+```
+
+`compose.yaml` reaches a `clients-service` backend running on the host via `host.docker.internal`
+(mapped through `extra_hosts` for Linux compatibility) rather than starting it itself — that
+backend has its own separate repo, Dockerfile, and `compose.yaml`. The image uses Next.js's
+`output: "standalone"` build (see `next.config.ts`) on a multi-stage Alpine base, with a
+`HEALTHCHECK` against the public `/` route.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
