@@ -1,0 +1,12 @@
+services:
+  web:
+    build:
+      context: .
+    ports:
+      - '3000:3000'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    environment:
+      - 'NODE_ENV=production'
+      - 'SESSION_SECRET=${SESSION_SECRET:?SESSION_SECRET must be set in .env}'
+      - 'BACKEND_API_URL=${BACKEND_API_URL:-http://host.docker.internal:8080}'
