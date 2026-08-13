@@ -52,6 +52,14 @@ backend has its own separate repo, Dockerfile, and `compose.yaml`. The image use
 `output: "standalone"` build (see `next.config.ts`) on a multi-stage Alpine base, with a
 `HEALTHCHECK` against the public `/` route.
 
+## CI/CD
+
+`.github/workflows/ci-cd.yml` runs on every push/PR to `main`: `npm run lint` then
+`npm run build`. On a push to `main` (not on PRs), a second job builds the Docker image above and
+publishes it to GitHub Container Registry as `ghcr.io/alpoh/camedina-clients-front` (tagged
+`latest` and by commit SHA), using the built-in `GITHUB_TOKEN` — no extra secrets needed for this
+step. Actually deploying that published image to a running host is still TBD (see `docs/PLAN.md`).
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
