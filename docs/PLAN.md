@@ -22,21 +22,20 @@ repo's `docs/PLAN.md` (`~/IdeaProjects/clients-service`).
   `README.md` under "CI/CD". Mirrors `clients-service`'s own `deploy.yml` pattern. The ECS
   Fargate service, ALB, and ECR repo this deploys to are provisioned by the sibling `clients-infra`
   repo (`~/IdeaProjects/clients-infra`) — see its `docs/PLAN.md`/`README.md` for that side.
-  First `ci-cd.yml` iteration (lint+build+publish to GHCR) was verified working via a successful
-  GitHub Actions run on 2026-08-13; the ECR/ECS version above replaces it and still needs its own
-  first-run verification once pushed.
+  **Verified working end-to-end on 2026-08-13**: a live push-to-`main` run built the image,
+  pushed it to ECR, and force-redeployed the `camedina-dev-clients-front` ECS service
+  (GitHub Actions run succeeded). Getting there required two one-time AWS-side fixes in
+  `clients-infra` (bootstrap OIDC stack had never been deployed, then its trust policy needed
+  updating for GitHub's post-rename id-qualified `sub` claim) plus deploying the
+  `service-clients-front` stack itself — all now applied; see `clients-infra`'s `github-oidc.yaml`
+  and README for details.
 
 ## Suggested next steps
 
 Roughly in the order they unblock each other; not a hard commitment, just a proposed path —
 revisit as priorities change.
 
-1. **Verify the ECR/ECS `ci-cd.yml` on a real push to `main`.** The workflow logic mirrors
-   `clients-service`'s proven `deploy.yml`, and the AWS side (ECR repo, ECS service, OIDC role)
-   is already provisioned by `clients-infra`, but this exact frontend workflow hasn't had a live
-   run yet — confirm the image lands in `camedina-dev-clients-front` (ECR) and the ECS service
-   actually redeploys.
-2. **Wire real auth**, once the backend's `User`/auth vertical is available — replace
+1. **Wire real auth**, once the backend's `User`/auth vertical is available — replace
    `lib/api/auth.ts`'s mock array with calls to the real register/login endpoints, keeping
    `lib/session.ts` (JWT cookie via `jose`) as-is.
 
