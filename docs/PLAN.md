@@ -18,15 +18,17 @@ repo's `docs/PLAN.md` (`~/IdeaProjects/clients-service`).
   `publish-image` job builds the existing multi-stage `Dockerfile` and pushes it to GHCR
   (`ghcr.io/alpoh/camedina-clients-front`, tagged `latest` + commit SHA) using the built-in
   `GITHUB_TOKEN` — no registry secrets needed for this part. Documented in `README.md` under
-  "CI/CD".
+  "CI/CD". Verified working: first run on push to `main` completed successfully (both jobs
+  green, ~4min) on 2026-08-13.
 
 ## Suggested next steps
 
 Roughly in the order they unblock each other; not a hard commitment, just a proposed path —
 revisit as priorities change.
 
-1. **Actually deploy the published image to a running host.** The image lands in GHCR on every
-   `main` push, but nothing pulls/runs it yet. Target host still TBD (e.g. a VPS via SSH +
+1. **Actually deploy the published image to a running host (CD still missing).** The image lands
+   in GHCR on every `main` push and the workflow itself is confirmed working, but nothing
+   pulls/runs it yet — this is CI only, not CD. Target host still TBD (e.g. a VPS via SSH +
    `docker compose pull && up -d`, a managed container platform, etc.) — should mirror whatever
    the backend's own GitHub Actions CD (`clients-service` `docs/PLAN.md` step 2) settles on,
    since both images likely deploy to the same place. Will need secrets (deploy-target
