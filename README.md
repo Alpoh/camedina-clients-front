@@ -55,10 +55,12 @@ backend has its own separate repo, Dockerfile, and `compose.yaml`. The image use
 ## CI/CD
 
 `.github/workflows/ci-cd.yml` runs on every push/PR to `main`: `npm run lint` then
-`npm run build`. On a push to `main` (not on PRs), a second job builds the Docker image above and
-publishes it to GitHub Container Registry as `ghcr.io/alpoh/camedina-clients-front` (tagged
-`latest` and by commit SHA), using the built-in `GITHUB_TOKEN` — no extra secrets needed for this
-step. Actually deploying that published image to a running host is still TBD (see `docs/PLAN.md`).
+`npm run build`. On a push to `main` (not on PRs), a second job builds the Docker image above,
+pushes it to ECR (`camedina-dev-clients-front`, tagged `latest` and by commit SHA), and forces a
+new ECS deployment on `camedina-dev-clients-front` — authenticating via GitHub OIDC
+(`camedina-dev-github-app-role`), no long-lived AWS credentials stored in this repo. The target
+ECS Fargate service, ALB, and ECR repo are provisioned in the sibling `clients-infra` repo (see
+`docs/PLAN.md`).
 
 ## Learn More
 
