@@ -1,8 +1,11 @@
 import type { User } from "@/lib/types/user";
 
-// Mock-only demo accounts. Passwords are plaintext here purely as a stand-in
-// for a real auth provider — this map (and this whole file) gets replaced
-// wholesale once the real backend/OpenAPI spec is wired up.
+// App-level profiles (name, role, clientId) for accounts that also need a
+// real backend User — see lib/api/auth.ts. The backend has no
+// roles/clientId concept, so this mapping stays local; passwords now live
+// only in the backend (bcrypt-hashed), not here. For these demo accounts to
+// be able to log in, each email below must also be registered against the
+// backend (POST /api/v1/auth/register) with a matching password.
 export const users: User[] = [
   {
     id: "user-admin-1",
@@ -38,11 +41,3 @@ export const users: User[] = [
     clientId: "client-fernwood",
   },
 ];
-
-export const mockPasswords: Record<string, string> = {
-  "dana@camedina.com": "demo1234",
-  "sam@camedina.com": "demo1234",
-  "jordan@acme.test": "demo1234",
-  "priya@borealis.test": "demo1234",
-  "marcus@fernwood.test": "demo1234",
-};

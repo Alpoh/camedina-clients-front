@@ -8,6 +8,7 @@ import {
   type SignupFormState,
 } from "@/lib/definitions";
 import { authenticate, registerClient } from "@/lib/api/auth";
+import { clearBackendToken } from "@/lib/api/http";
 import { createSession, deleteSession } from "@/lib/session";
 import { homeForRole } from "@/lib/auth-routes";
 
@@ -69,5 +70,6 @@ export async function signup(
 
 export async function logout() {
   await deleteSession();
+  await clearBackendToken();
   redirect("/login");
 }

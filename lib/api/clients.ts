@@ -14,8 +14,11 @@ export async function getClientById(id: string): Promise<Client | null> {
   return apiGetOrNull<Client>(`/api/v1/clients/${id}`);
 }
 
-export async function createClient(input: ClientInput): Promise<Client> {
-  return apiPost<Client>("/api/v1/clients", input);
+export async function createClient(
+  input: ClientInput,
+  token?: string,
+): Promise<Client> {
+  return apiPost<Client>("/api/v1/clients", input, token);
 }
 
 export async function updateClient(

@@ -6,8 +6,29 @@ repo's `docs/PLAN.md` (`~/IdeaProjects/clients-service`).
 ## Done so far
 
 - **Backend integration.** Clients, Phones, Addresses, and Projects are wired to the real
-  Spring Boot backend via `lib/api/*.ts` (`BACKEND_API_URL`). Auth (`lib/api/auth.ts`) still
-  targets an in-memory mock array pending the backend's `User`/auth vertical.
+  Spring Boot backend via `lib/api/*.ts` (`BACKEND_API_URL`).
+- **Real auth wiring.** `lib/api/auth.ts` now calls the backend's real `POST /api/v1/auth/login`
+  and `POST /api/v1/auth/register` (bcrypt-verified, HS256 JWT) instead of checking a local
+  password map. The returned token is stored in its own httpOnly `backend_token` cookie
+  (`lib/api/http.ts`, `setBackendToken`/`clearBackendToken`), separate from `lib/session.ts`'s
+  app-level session cookie, and `apiGet`/`apiPost`/`apiPut`/`apiDelete` attach it as
+  `Authorization: Bearer <token>` on every request — required now that the backend's
+  `SecurityConfig` enforces `anyRequest().authenticated()` on everything but `auth`/`actuator`.
+  `createClient` takes an optional explicit token (rather than relying on the cookie) so the
+  signup flow can create the backend `Client` with the token it just received, before that
+  token's cookie write is guaranteed visible later in the same action.
+  Known gaps, since the backend has no roles/authorities yet (see `docs/API.md`):
+  - `lib/mock-data/users.ts`'s `users` array is still the only source of app-level role/name/
+    clientId — a real backend `User` (email + password) is necessary but not sufficient to log
+    in; the email must *also* have a matching profile entry here.
+  - The demo/seed accounts (`dana@camedina.com`, `jordan@acme.test`, etc.) have profile entries
+    but no backing backend `User` — each needs to be registered against the backend once
+    (`POST /api/v1/auth/register`) with a matching password before it can log in for real. Their
+    seeded `clientId`s are also placeholders, not real backend `Client` UUIDs.
+  - No token refresh/revocation (matches the backend's current state): the backend JWT expires
+    in `security.jwt.expiration` (default 1h) while the app session cookie lasts 7 days, so a
+    long-lived app session can start getting `ApiError(401)` from backend calls before the user
+    is prompted to log in again.
 - **Docker packaging.** Multi-stage `Dockerfile` (`node:22-alpine`, `output: "standalone"`),
   `compose.yaml` (reaches `clients-service` on the host via `host.docker.internal`),
   `.dockerignore`, `.env.example`. Documented in `README.md` under "Docker".
@@ -35,9 +56,12 @@ repo's `docs/PLAN.md` (`~/IdeaProjects/clients-service`).
 Roughly in the order they unblock each other; not a hard commitment, just a proposed path —
 revisit as priorities change.
 
-1. **Wire real auth**, once the backend's `User`/auth vertical is available — replace
-   `lib/api/auth.ts`'s mock array with calls to the real register/login endpoints, keeping
-   `lib/session.ts` (JWT cookie via `jose`) as-is.
+1. **Seed/register the demo accounts against the real backend** (see the known gaps above) so
+   the existing demo login flow works end-to-end again, and give them real `Client` records so
+   their `clientId`s aren't placeholders.
+2. **Decide on token refresh/session UX** once the backend gains a refresh or longer-lived token
+   — right now a stale `backend_token` just surfaces as an `ApiError(401)` from whichever page
+   happens to call the backend next.
 
 ## How to update this doc
 
