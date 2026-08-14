@@ -26,6 +26,19 @@ Copy `.env.local.example` to `.env.local` and fill it in — `SESSION_SECRET` (f
 insecure dev-only default if unset) and `BACKEND_API_URL` (defaults to `http://localhost:8080`,
 the [`clients-service`](../clients-service) Spring Boot backend).
 
+## Testing
+
+Unit/component tests run on [Vitest](https://vitest.dev) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/):
+
+```bash
+npm test          # single run — what CI runs
+npm run test:watch
+```
+
+Tests are colocated next to the file under test (`*.test.ts`/`*.test.tsx`). See `CLAUDE.md`'s
+"Testing" section for conventions (mocking `"server-only"`/`"use server"` modules, why async
+Server Components aren't unit-tested here).
+
 ## Docker
 
 Build and run the production image directly:

@@ -50,6 +50,20 @@ repo's `docs/PLAN.md` (`~/IdeaProjects/clients-service`).
   updating for GitHub's post-rename id-qualified `sub` claim) plus deploying the
   `service-clients-front` stack itself — all now applied; see `clients-infra`'s `github-oidc.yaml`
   and README for details.
+- **Test runner added.** Vitest + React Testing Library, `happy-dom` environment — see `CLAUDE.md`
+  ("Testing" section) for conventions and `README.md` for the commands. `npm test` (single run) is
+  now a step in `lint-and-build`, before `npm run build`. Environment note: `jsdom` (the
+  environment Next.js's own testing guide suggests) hit an unresolved upstream bug on this
+  machine's Node 20.15 — `jsdom@28+` bumped `html-encoding-sniffer` to a version that `require()`s
+  an ESM-only dependency, which only works on Node `>=20.19`/`>=22.12` (where synchronous
+  `require(esm)` is supported); pinning `jsdom` backward just hit the same wall one dependency
+  further in (`@asamuzakjp/css-color` → `@csstools/css-calc`). Switched to `happy-dom` instead,
+  which has a much lighter dependency tree and isn't affected. Revisit if bumping the local/CI
+  Node version ever becomes deliberate — `jsdom` would then be a safe option again, and it's
+  slightly closer to real browser behavior for edge cases.
+- Also dropped `vite-tsconfig-paths` from the doc's suggested manual setup in favor of Vite 8's
+  native `resolve.tsconfigPaths: true` (the plugin now prints a deprecation notice recommending
+  exactly that).
 
 ## Suggested next steps
 
