@@ -5,9 +5,6 @@ import { Agent } from "undici";
 const BASE_URL = process.env.BACKEND_API_URL ?? "http://localhost:8080";
 const TOKEN_COOKIE = "backend_token";
 
-// Dev/staging backends sometimes serve HTTPS with a self-signed cert. Opt in
-// per-environment with BACKEND_ALLOW_SELF_SIGNED_CERT=true — ignored outright
-// in production so a stray env var can never disable cert verification there.
 const selfSignedDispatcher =
   process.env.NODE_ENV !== "production" &&
   process.env.BACKEND_ALLOW_SELF_SIGNED_CERT === "true"
@@ -24,8 +21,6 @@ export class ApiError extends Error {
   }
 }
 
-// Reads the token's `exp` claim (no signature check — the frontend doesn't
-// hold the backend's signing secret) so the cookie doesn't outlive the JWT.
 function jwtExpiry(token: string): Date | undefined {
   try {
     const payload = JSON.parse(
@@ -37,9 +32,6 @@ function jwtExpiry(token: string): Date | undefined {
   }
 }
 
-// Stores the backend's own JWT (from /api/v1/auth/register or /login) in a
-// cookie separate from lib/session.ts's app-level session — every endpoint
-// but auth/health requires it as `Authorization: Bearer <token>`.
 export async function setBackendToken(token: string) {
   (await cookies()).set(TOKEN_COOKIE, token, {
     httpOnly: true,
@@ -81,9 +73,7 @@ async function request<T>(
     try {
       const problem = (await res.json()) as { detail?: string };
       detail = problem.detail ?? detail;
-    } catch {
-      // response wasn't a ProblemDetail body — keep the status text
-    }
+    } catch {}
     throw new ApiError(res.status, detail);
   }
 
@@ -122,9 +112,6 @@ export function apiDelete(path: string, token?: string): Promise<void> {
   return request<void>(path, { method: "DELETE" }, token);
 }
 
-// Fetches a resource by id, treating a 404 from the backend as "not found"
-// rather than an error to propagate — matches the `T | null` pattern the
-// rest of the app already expects from getXById-style lookups.
 export async function apiGetOrNull<T>(
   path: string,
   token?: string,

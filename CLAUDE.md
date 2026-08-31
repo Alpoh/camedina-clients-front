@@ -11,8 +11,13 @@
   needs interactivity/hooks. Anything that touches the backend or secrets stays `"server-only"`
   (see `lib/api/*.ts`) or `"use server"` (see `app/actions/*.ts`) — never call the backend
   directly from a Client Component.
-- **Clean code:** no comments that restate what the code does — only comment non-obvious *why*.
-  Don't add abstractions, options, or config for cases that don't exist yet in this app.
+- **Clean code:** **no comments, period.** Not "why" comments, not cross-file-invariant notes, not
+  API-quirk explanations — none of it, no exceptions. If something needs explaining, say it through
+  a name (variable, function, extracted constant) instead. This applies to every file in this repo,
+  code and config alike (`.ts`/`.tsx`, `.yml`/`.yaml`, `Dockerfile`, etc.) — not just app source.
+  Prose documentation (`README.md`, `docs/*.md`, `CHANGELOG.md`) is unaffected; this rule is about
+  comments embedded in code/config, not the docs themselves. Don't add abstractions, options, or
+  config for cases that don't exist yet in this app.
 
 # Testing
 

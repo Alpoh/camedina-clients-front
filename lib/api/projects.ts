@@ -13,9 +13,6 @@ export async function getProjectsByClientId(
   return page.content;
 }
 
-// Real, single fetch — used wherever the caller already knows which client
-// the project belongs to (e.g. the portal, scoped by the session). A
-// cross-client id/projectId pair 404s directly from the backend.
 export async function getProjectByClientAndId(
   clientId: string,
   projectId: string,
@@ -25,12 +22,6 @@ export async function getProjectByClientAndId(
   );
 }
 
-// The backend only exposes projects as a client sub-resource — there's no
-// global "all projects" or "project by id" endpoint yet (flagged as a gap
-// in docs/PROJECTS_PROPOSAL.md). Until that exists, the admin's cross-client
-// views fan out: fetch every client, then every client's projects, and
-// combine client-side. Fine at today's client counts; revisit if a global
-// listing endpoint gets added.
 export async function getProjects(): Promise<Project[]> {
   const clients = await getClients();
   const perClient = await Promise.all(

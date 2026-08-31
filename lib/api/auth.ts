@@ -6,12 +6,6 @@ import type { User } from "@/lib/types/user";
 
 type AuthResponse = { token: string };
 
-// The backend's User is just {email, passwordHash} with no roles/clientId
-// (see docs/API.md: "no roles/authorities yet — every authenticated caller
-// can do everything"). `users` here is still an in-memory profile table —
-// it maps an authenticated email to the app-level role/name/clientId the
-// backend doesn't know about — but the backend now owns password
-// verification and issues the bearer token every other endpoint requires.
 export async function authenticate(
   email: string,
   password: string,
@@ -39,11 +33,6 @@ export async function getUserById(id: string): Promise<User | null> {
   return users.find((u) => u.id === id) ?? null;
 }
 
-// The account (User, role, session) is still an app-level profile layered on
-// top of a real backend account: registerClient calls the real
-// /api/v1/auth/register, then reuses the freshly-issued token (the cookie
-// isn't set yet at this point, so it's passed explicitly) to create a real
-// Client via the same createClient() the admin CRUD uses.
 export async function registerClient(input: {
   name: string;
   company: string;

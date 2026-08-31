@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { PROJECT_STATUSES, PROJECT_DESCRIPTION_MAX_LENGTH } from "@/lib/types/project";
 
 export const LoginFormSchema = z.object({
   email: z.email({ error: "Enter a valid email." }).trim(),
@@ -36,21 +37,15 @@ export type SignupFormState =
     }
   | undefined;
 
-// Must match `ProjectStatus` in lib/types/project.ts — zod needs the literal
-// tuple at runtime, the type can't be derived from it.
 export const ProjectFormSchema = z.object({
   name: z.string().min(2, { error: "Enter a project name." }).trim(),
-  status: z.enum(["planning", "in_progress", "blocked", "review", "done"], {
-    error: "Choose a status.",
-  }),
-  // FormData.get() returns null (not undefined) for an absent field —
-  // .nullish() accepts that, .optional() alone would reject it. max(2000)
-  // mirrors the backend's ProjectRequest @Size(max = 2000) so this surfaces
-  // as a field error instead of the generic backend-failure message.
+  status: z.enum(PROJECT_STATUSES, { error: "Choose a status." }),
   description: z
     .string()
     .trim()
-    .max(2000, { error: "Description must be 2000 characters or fewer." })
+    .max(PROJECT_DESCRIPTION_MAX_LENGTH, {
+      error: `Description must be ${PROJECT_DESCRIPTION_MAX_LENGTH} characters or fewer.`,
+    })
     .nullish(),
 });
 

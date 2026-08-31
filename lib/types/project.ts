@@ -1,9 +1,14 @@
-export type ProjectStatus =
-  | "planning"
-  | "in_progress"
-  | "blocked"
-  | "review"
-  | "done";
+export const PROJECT_STATUSES = [
+  "planning",
+  "in_progress",
+  "blocked",
+  "review",
+  "done",
+] as const;
+
+export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
+
+export const PROJECT_DESCRIPTION_MAX_LENGTH = 2000;
 
 export type Project = {
   id: string;

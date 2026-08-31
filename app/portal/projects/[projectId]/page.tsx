@@ -14,9 +14,6 @@ export default async function PortalProjectDetailPage({
   const user = await getUser();
   const { projectId } = await params;
 
-  // Fetching scoped to the session's own clientId is the ownership check —
-  // the backend itself 404s a project id that belongs to a different
-  // client, the same as one that doesn't exist at all.
   if (!user.clientId) notFound();
   const project = await getProjectByClientAndId(user.clientId, projectId);
 
