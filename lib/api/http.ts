@@ -1,8 +1,18 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { Agent } from "undici";
 
 const BASE_URL = process.env.BACKEND_API_URL ?? "http://localhost:8080";
 const TOKEN_COOKIE = "backend_token";
+
+// Dev/staging backends sometimes serve HTTPS with a self-signed cert. Opt in
+// per-environment with BACKEND_ALLOW_SELF_SIGNED_CERT=true — ignored outright
+// in production so a stray env var can never disable cert verification there.
+const selfSignedDispatcher =
+  process.env.NODE_ENV !== "production" &&
+  process.env.BACKEND_ALLOW_SELF_SIGNED_CERT === "true"
+    ? new Agent({ connect: { rejectUnauthorized: false } })
+    : undefined;
 
 export class ApiError extends Error {
   status: number;
@@ -50,7 +60,7 @@ async function request<T>(
   token?: string,
 ): Promise<T> {
   const authToken = token ?? (await cookies()).get(TOKEN_COOKIE)?.value;
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const requestInit: RequestInit & { dispatcher?: Agent } = {
     ...init,
     headers: {
       "Content-Type": "application/json",
@@ -58,7 +68,9 @@ async function request<T>(
       ...init?.headers,
     },
     cache: "no-store",
-  });
+    ...(selfSignedDispatcher ? { dispatcher: selfSignedDispatcher } : {}),
+  };
+  const res = await fetch(`${BASE_URL}${path}`, requestInit);
 
   if (res.status === 204) {
     return undefined as T;
