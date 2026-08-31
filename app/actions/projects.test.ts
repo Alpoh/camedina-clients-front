@@ -43,6 +43,20 @@ describe("createProjectAction", () => {
     expect(createProjectMock).not.toHaveBeenCalled();
   });
 
+  it("returns a field error when the description exceeds the backend's 2000-char limit", async () => {
+    const state = await createProjectAction(
+      "client-acme",
+      undefined,
+      formData({
+        name: "New site",
+        status: "planning",
+        description: "a".repeat(2001),
+      }),
+    );
+    expect(state?.errors?.description).toBeDefined();
+    expect(createProjectMock).not.toHaveBeenCalled();
+  });
+
   it("returns a generic message when the backend call fails", async () => {
     createProjectMock.mockRejectedValue(new Error("backend down"));
     const state = await createProjectAction(

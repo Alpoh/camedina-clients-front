@@ -44,8 +44,14 @@ export const ProjectFormSchema = z.object({
     error: "Choose a status.",
   }),
   // FormData.get() returns null (not undefined) for an absent field —
-  // .nullish() accepts that, .optional() alone would reject it.
-  description: z.string().trim().nullish(),
+  // .nullish() accepts that, .optional() alone would reject it. max(2000)
+  // mirrors the backend's ProjectRequest @Size(max = 2000) so this surfaces
+  // as a field error instead of the generic backend-failure message.
+  description: z
+    .string()
+    .trim()
+    .max(2000, { error: "Description must be 2000 characters or fewer." })
+    .nullish(),
 });
 
 export type ProjectFormState =
