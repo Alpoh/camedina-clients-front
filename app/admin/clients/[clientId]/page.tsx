@@ -38,9 +38,17 @@ export default async function AdminClientDetailPage({
         {client.email} · client since {formatDate(client.createdAt)}
       </p>
 
-      <p className="mt-8 text-xs uppercase tracking-wide text-foreground-dim">
-        Projects
-      </p>
+      <div className="mt-8 flex items-center justify-between">
+        <p className="text-xs uppercase tracking-wide text-foreground-dim">
+          Projects
+        </p>
+        <Link
+          href={`/admin/clients/${client.id}/projects/new`}
+          className="text-xs text-accent hover:underline"
+        >
+          + new project
+        </Link>
+      </div>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {projects.map((project) => (
           <Link key={project.id} href={`/admin/projects/${project.id}`}>
