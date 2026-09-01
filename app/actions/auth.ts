@@ -32,7 +32,7 @@ export async function login(
     return { message: "Invalid email or password." };
   }
 
-  await createSession(user.id, user.role);
+  await createSession(user);
   redirect(homeForRole(user.role));
 }
 
@@ -64,7 +64,7 @@ export async function signup(
     return { message: "An account with this email already exists." };
   }
 
-  await createSession(user.id, user.role);
+  await createSession(user);
   redirect(homeForRole(user.role));
 }
 

@@ -3,26 +3,27 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { decrypt, SESSION_COOKIE } from "@/lib/session";
-import { getUserById } from "@/lib/api/auth";
+import type { User } from "@/lib/types/user";
 
 export const verifySession = cache(async () => {
   const cookie = (await cookies()).get(SESSION_COOKIE)?.value;
   const session = await decrypt(cookie);
 
-  if (!session?.userId) {
+  if (!session?.id) {
     redirect("/login");
   }
 
-  return { isAuth: true as const, userId: session.userId, role: session.role };
+  return session;
 });
 
-export const getUser = cache(async () => {
+export const getUser = cache(async (): Promise<User> => {
   const session = await verifySession();
-  const user = await getUserById(session.userId);
 
-  if (!user) {
-    redirect("/login");
-  }
-
-  return user;
+  return {
+    id: session.id,
+    name: session.name,
+    email: session.email,
+    role: session.role,
+    clientId: session.clientId,
+  };
 });

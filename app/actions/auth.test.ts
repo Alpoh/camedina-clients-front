@@ -55,17 +55,18 @@ describe("login", () => {
   });
 
   it("creates a session and redirects to the role's home on success", async () => {
-    authenticateMock.mockResolvedValue({
+    const user = {
       id: "user-admin-1",
       role: "admin",
-      name: "Dana Reyes",
+      name: "dana",
       email: "dana@camedina.com",
-    });
+    };
+    authenticateMock.mockResolvedValue(user);
     await login(
       undefined,
       formData({ email: "dana@camedina.com", password: "demo1234" }),
     );
-    expect(createSessionMock).toHaveBeenCalledWith("user-admin-1", "admin");
+    expect(createSessionMock).toHaveBeenCalledWith(user);
     expect(redirectMock).toHaveBeenCalledWith("/admin");
   });
 });
@@ -89,13 +90,14 @@ describe("signup", () => {
   });
 
   it("creates a session and redirects to /portal for a new client", async () => {
-    registerClientMock.mockResolvedValue({
+    const user = {
       id: "user-client-acme",
       role: "client",
       name: "Dana Reyes",
       email: "dana@camedina.com",
       clientId: "some-uuid",
-    });
+    };
+    registerClientMock.mockResolvedValue(user);
     await signup(
       undefined,
       formData({
@@ -105,10 +107,7 @@ describe("signup", () => {
         password: "demo1234",
       }),
     );
-    expect(createSessionMock).toHaveBeenCalledWith(
-      "user-client-acme",
-      "client",
-    );
+    expect(createSessionMock).toHaveBeenCalledWith(user);
     expect(redirectMock).toHaveBeenCalledWith("/portal");
   });
 });

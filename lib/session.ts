@@ -1,16 +1,14 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import type { Role } from "@/lib/types/user";
+import type { User } from "@/lib/types/user";
 
 const secretKey = process.env.SESSION_SECRET ?? "dev-only-insecure-secret-key";
 const encodedKey = new TextEncoder().encode(secretKey);
 const SESSION_COOKIE = "session";
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 
-export type SessionPayload = {
-  userId: string;
-  role: Role;
+export type SessionPayload = User & {
   expiresAt: Date;
 };
 
@@ -30,8 +28,11 @@ export async function decrypt(
       algorithms: ["HS256"],
     });
     return {
-      userId: payload.userId as string,
-      role: payload.role as Role,
+      id: payload.id as string,
+      name: payload.name as string,
+      email: payload.email as string,
+      role: payload.role as SessionPayload["role"],
+      clientId: payload.clientId as string | undefined,
       expiresAt: new Date(payload.expiresAt as string),
     };
   } catch {
@@ -39,9 +40,9 @@ export async function decrypt(
   }
 }
 
-export async function createSession(userId: string, role: Role) {
+export async function createSession(user: User) {
   const expiresAt = new Date(Date.now() + SESSION_DURATION_MS);
-  const session = await encrypt({ userId, role, expiresAt });
+  const session = await encrypt({ ...user, expiresAt });
   const cookieStore = await cookies();
 
   cookieStore.set(SESSION_COOKIE, session, {

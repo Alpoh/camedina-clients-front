@@ -1,36 +1,52 @@
 import "server-only";
-import { users } from "@/lib/mock-data/users";
 import { createClient } from "@/lib/api/clients";
-import { apiPost, setBackendToken, ApiError } from "@/lib/api/http";
-import type { User } from "@/lib/types/user";
+import { apiGetOrNull, apiPost, setBackendToken, ApiError } from "@/lib/api/http";
+import type { Role, User } from "@/lib/types/user";
 
-type AuthResponse = { token: string };
+type BackendAuthResponse = { token: string; id: string; role: Role };
+
+function displayNameFromEmail(email: string): string {
+  return email.split("@")[0];
+}
+
+async function resolveClientId(
+  email: string,
+  role: Role,
+  token: string,
+): Promise<string | undefined> {
+  if (role !== "client") return undefined;
+  const client = await apiGetOrNull<{ id: string }>(
+    `/api/v1/clients/by-email/${encodeURIComponent(email)}`,
+    token,
+  );
+  return client?.id;
+}
 
 export async function authenticate(
   email: string,
   password: string,
 ): Promise<User | null> {
-  const normalizedEmail = email.trim().toLowerCase();
-  const profile = users.find((u) => u.email.toLowerCase() === normalizedEmail);
-  if (!profile) return null;
-
-  let token: string;
+  let auth: BackendAuthResponse;
   try {
-    ({ token } = await apiPost<AuthResponse>("/api/v1/auth/login", {
+    auth = await apiPost<BackendAuthResponse>("/api/v1/auth/login", {
       email,
       password,
-    }));
+    });
   } catch (err) {
     if (err instanceof ApiError && err.status === 401) return null;
     throw err;
   }
 
-  await setBackendToken(token);
-  return profile;
-}
+  await setBackendToken(auth.token);
+  const clientId = await resolveClientId(email, auth.role, auth.token);
 
-export async function getUserById(id: string): Promise<User | null> {
-  return users.find((u) => u.id === id) ?? null;
+  return {
+    id: auth.id,
+    name: displayNameFromEmail(email),
+    email,
+    role: auth.role,
+    clientId,
+  };
 }
 
 export async function registerClient(input: {
@@ -39,44 +55,35 @@ export async function registerClient(input: {
   email: string;
   password: string;
 }): Promise<User | null> {
-  const normalizedEmail = input.email.trim().toLowerCase();
-  const emailTaken = users.some(
-    (u) => u.email.toLowerCase() === normalizedEmail,
-  );
-  if (emailTaken) return null;
-
-  let token: string;
+  let auth: BackendAuthResponse;
   try {
-    ({ token } = await apiPost<AuthResponse>("/api/v1/auth/register", {
+    auth = await apiPost<BackendAuthResponse>("/api/v1/auth/register", {
       email: input.email,
       password: input.password,
-    }));
+    });
   } catch (err) {
     if (err instanceof ApiError && err.status === 409) return null;
     throw err;
   }
 
+  await setBackendToken(auth.token);
+
   let client;
   try {
     client = await createClient(
       { name: input.company, email: input.email },
-      token,
+      auth.token,
     );
   } catch (err) {
     if (err instanceof ApiError && err.status === 409) return null;
     throw err;
   }
 
-  await setBackendToken(token);
-
-  const user: User = {
-    id: `user-client-${client.id}`,
+  return {
+    id: auth.id,
     name: input.name,
     email: input.email,
-    role: "client",
+    role: auth.role,
     clientId: client.id,
   };
-  users.push(user);
-
-  return user;
 }
